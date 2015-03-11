@@ -31,7 +31,7 @@
 # For the latest version, visit github.com/jrm98/raspi-dsign
 #-------------------------------------------------------------------------------
 
-import sys, getopt, json, datetime, subprocess, time
+import sys, getopt, json, datetime, subprocess, time, ConfigParser
 from pprint import pprint
 
 # called if incorrect usage was performed
@@ -274,7 +274,7 @@ def update(config_file='default.ini'):
 	today = datetime.datetime.today()
 
 	# create event time
-	update = datetime.datetime(today.year, today.month, today.day, 2, 0, 0)
+	update = datetime.datetime(today.year, today.month, today.day, 0, 0, 0)
 
 	update += datetime.timedelta(days=1)
 	next_event = time_between(update, datetime.datetime.today())
@@ -286,13 +286,16 @@ def update(config_file='default.ini'):
 		print("...waiting...")
 		pass
 	print("<<update @ " + str(datetime.datetime.today()) + ">>")
-	# _update(config['FTP']['host'],config['FTP']['user'],config['FTP']['pass'])
+
+	config = ConfigParser.ConfigParser()
+	config.read(config_file)
+	_update(config.get('FTP','host'), config.get('FTP','user'), config.get('FTP','pass'))
 	pass
 
 def _update(ftp_host, ftp_user, ftp_pass):
 	# run the update script
 	subprocess.call(
-		["./rpi-dsign-update.sh", 
+		["./rpids_update.sh", 
 		ftp_host, 
 		ftp_user, 
 		ftp_pass], 

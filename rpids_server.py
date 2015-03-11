@@ -20,7 +20,7 @@
 
 # uses web browser interface
 
-import sys, time, os, subprocess, signal
+import sys, time, os, subprocess, signal, ConfigParser
 from flask import Flask
 from functools import wraps
 from flask import request, Response, render_template, flash
@@ -144,6 +144,14 @@ def status():
 @app.route("/update")
 @requires_auth
 def update():
+    config = ConfigParser.ConfigParser()
+    config.read('default.ini')
+    subprocess.call(
+        ["./rpids_update.sh", 
+        config.get('FTP','host'), 
+        config.get('FTP','user'), 
+        config.get('FTP','pass')], 
+        shell=True)
     return render_template('update.html')
 
 # powers off and restarts the unit

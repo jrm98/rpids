@@ -20,9 +20,8 @@
 #-------------------------------------------------------------------------------
 
 # updates dependecies
-apt-get upgrade fbi
-apt-get upgrade ftp
-apt-get upgrade omxplayer
+apt-get update
+apt-get upgrade
 
 cd "/home/pi/rpids"
 # FTP updater for script updating
