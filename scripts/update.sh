@@ -32,6 +32,19 @@ PASS=$3
 # move to tmp folder to download files
 cd tmp
 
+# download latest version from repo and untar
+curl -L https://github.com/jrm98/rpids/tarball/master | tar zx
+
+# install latest version if found
+if [ 0 -lt $(ls | grep 'jrm98-rpids-*' | wc -w) ] then 
+	cd jrm98-rpids-*
+	cp -r ./ ../
+	cd ..
+	rm -r jrm98-rpids-*
+else 
+	echo "No new version found"
+fi
+
 # open ftp connection
 ftp -inv $HOST << EOF
 

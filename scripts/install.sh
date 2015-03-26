@@ -32,6 +32,7 @@ pip install flask
 
 # ensures dependecies are up to date
 apt-get update
+apt-get upgrade
 
 cd "/home/pi/rpids"
 ./rpids_update.sh

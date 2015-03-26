@@ -31,8 +31,10 @@
 # For the latest version, visit github.com/jrm98/raspi-dsign
 #-------------------------------------------------------------------------------
 
-import sys, getopt, json, datetime, subprocess, time, ConfigParser
+import sys, getopt, json, datetime, subprocess, time, ConfigParser, os, signal
 from pprint import pprint
+
+sshow_pid = 0
 
 # called if incorrect usage was performed
 def usage():
@@ -90,6 +92,10 @@ def main(argv):
 	# parse data into playlist -> send playlist data to event handler ->
 	# begin update script
 
+	print("starting slideshow...")
+	# update/reboot
+	sshow()
+
 	print("loading playlist...")
 	# load playlist from json file, maybe add xml support too...
 	data = load_playlist_data(argv)
@@ -103,8 +109,10 @@ def main(argv):
 	event_handler(playlist)
 
 	print("starting update scripts...")
-	# update/reboot
 	update()
+	reboot()
+
+	pass
 
 #-------------------------------------------------------------------------------
 # load_playlist_data()
@@ -117,7 +125,7 @@ def load_playlist_data(args):
 	if len(args) > 0:
 		filename = args[0]
 	else:
-		filename = 'rpids_default.json'
+		filename = '/home/pi/rpids/playlists/default.json'
 
 	# try to load playlist or load default, else make new default then load
 	check = True;
@@ -128,15 +136,15 @@ def load_playlist_data(args):
 			data = json.loads(raw)
 			f.close()
 			check = False;
-		except FileNotFoundError as err:
+		except IOError as err:
 			print('rpids: could not find playlist "' + filename + '"')
-			if filename == 'rpids_default.json':
+			if filename == '/home/pi/rpids/playlists/default.json':
 				# create a new default playlist
 				print('rpids: creating new default playlist...')
 				check = False;
 			else:
 				print('rpids: reverting to default playlist...')
-				filename = 'rpids_default.json'
+				filename = '/home/pi/rpids/playlists/default.json'
 		except ValueError:
 			print("Error: file not formatted correctly")
 			data = []
@@ -251,7 +259,9 @@ def event_handler(events):
 			print("...waiting...")
 			pass
 		print("<<event (" + str(event) + ") @ " + str(datetime.datetime.today()) + ">>")
-		# subprocess.call(event['script'], shell=False) #---------------------------- not sure about shell=False
+
+		# very insecure line of code... looking for a fix.
+		subprocess.call(["sh", "-c", "/home/pi/rpids/scripts/video.sh", event.data['source']], shell=True)
 	pass
 
 #-------------------------------------------------------------------------------
@@ -259,7 +269,7 @@ def event_handler(events):
 #
 # An overloaded method for setting up and running the update script
 #-------------------------------------------------------------------------------
-def update(config_file='default.ini'):
+def update(config_file='/home/pi/rpids/config/default.ini'):
 	# check specified file for FTP -> host/user/pass
 	# config = configparser.ConfigParser()
 	# try:
@@ -285,7 +295,8 @@ def update(config_file='default.ini'):
 		sleep(1)
 		print("...waiting...")
 		pass
-	print("<<update @ " + str(datetime.datetime.today()) + ">>")
+	print("<<update @ " + str(datetime.datetime.today()) + " from " 
+		+ config.get('FTP','host') + ">>")
 
 	config = ConfigParser.ConfigParser()
 	config.read(config_file)
@@ -295,11 +306,38 @@ def update(config_file='default.ini'):
 def _update(ftp_host, ftp_user, ftp_pass):
 	# run the update script
 	subprocess.call(
-		["./rpids_update.sh", 
+		["sh", "-c", "/home/pi/rpids/scripts/update.sh", 
 		ftp_host, 
 		ftp_user, 
 		ftp_pass], 
 		shell=True)
+	pass
+
+# script handler for slideshow
+# def sshow():
+# 	global sshow_pid
+# 	if sshow_pid == 0:
+# 		sshow_pid = os.fork()
+#         if sshow_pid == 0:
+# 			subprocess.call(["sh", "-c", "/home/pi/rpids/scripts/sshow.sh"], shell=True)
+# 			print("rpids: sshow exiting...")
+# 			os.kill(0, signal.SIGTERM)
+# 	else:
+# 		# os.kill(sshow_pid, signal.SIGTERM)
+# 		# sshow()
+# 		pass
+# 	pass
+def sshow():
+	subprocess.call(["sh", "-c", "/home/pi/rpids/scripts/sshow.sh"], shell=True)
+	print("rpids: sshow exiting...")
+	pass
+
+# begins a reboot of the system
+def reboot():
+	if sshow_pid != 0:
+		os.kill(sshow_pid, signal.SIGTERM)
+
+	subprocess.call(["sudo", "reboot"], shell=True)
 	pass
 
 #-------------------------------------------------------------------------------
@@ -309,9 +347,9 @@ def _update(ftp_host, ftp_user, ftp_pass):
 #-------------------------------------------------------------------------------
 def log(str):
 	try:
-		f = open('log.txt', 'a')
+		f = open('/home/pi/rpids/log/log.txt', 'a')
 	except FileNotFoundError as err:
-		f = open('log.txt', 'w')
+		f = open('/home/pi/rpids/log/log.txt', 'w')
 	f.write(datetime.datetime.today().__format__("[%x %X]: ") + str + "\n")
 	f.close()
 	pass

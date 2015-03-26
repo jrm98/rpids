@@ -32,11 +32,35 @@
 		"srctype":"local"
 	},
 	{
-		"start_hour":"09",
-		"start_min":"09",
-		"start_sec":"55",
-		"start_day":"Tue",
-		"source":"default",
-		"srctype":"RTMP"
+		"start_hour":"16",
+		"start_min":"00",
+		"start_sec":"00",
+		"start_day":"Thu",
+		"source":"video/test01.mp4",
+		"srctype":"local"
+	},
+	{
+		"start_hour":"16",
+		"start_min":"02",
+		"start_sec":"00",
+		"start_day":"Thu",
+		"source":"video/test01.mp4",
+		"srctype":"local"
+	},
+	{
+		"start_hour":"16",
+		"start_min":"03",
+		"start_sec":"00",
+		"start_day":"Thu",
+		"source":"video/test01.mp4",
+		"srctype":"local"
+	},
+	{
+		"start_hour":"16",
+		"start_min":"04",
+		"start_sec":"00",
+		"start_day":"Thu",
+		"source":"video/test01.mp4",
+		"srctype":"local"
 	}
 ]
