@@ -32,6 +32,13 @@ app.debug = False
 pid = 0
 stat = False
 
+if not stat:
+    stat = True
+    pid = os.fork()
+    if pid == 0:
+        subprocess.call(["python", "rpids.py"])
+        os._exit(EX_OK)
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
@@ -73,6 +80,7 @@ def unit_display(units):
     return u
 
 def shutdown_server():
+    subprocess.call(["sh", "scripts/killproc.sh"])
     global pid
     try:
         os.killpg(os.getpgrp(), signal.SIGTERM)
@@ -119,7 +127,9 @@ def stop():
     if stat & (pid != 0):
         stat = False
         os.kill(pid, signal.SIGTERM)
+        subprocess.call(["sh", "scripts/killproc.sh"])
         return render_template('stop.html')
+    subprocess.call(["sh", "scripts/killproc.sh"])
     stat = False
     return render_template('stop_e.html')
 
@@ -147,7 +157,7 @@ def update():
     config = ConfigParser.ConfigParser()
     config.read('default.ini')
     subprocess.call(
-        ["./rpids_update.sh", 
+        ["sh", "scripts/update.sh", 
         config.get('FTP','host'), 
         config.get('FTP','user'), 
         config.get('FTP','pass')], 

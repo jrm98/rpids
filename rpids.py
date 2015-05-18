@@ -141,6 +141,7 @@ def load_playlist_data(args):
 			if filename == '/home/pi/rpids/playlists/default.json':
 				# create a new default playlist
 				print('rpids: creating new default playlist...')
+				data = []
 				check = False;
 			else:
 				print('rpids: reverting to default playlist...')
@@ -314,22 +315,21 @@ def _update(ftp_host, ftp_user, ftp_pass):
 	pass
 
 # script handler for slideshow
-# def sshow():
-# 	global sshow_pid
-# 	if sshow_pid == 0:
-# 		sshow_pid = os.fork()
-#         if sshow_pid == 0:
-# 			subprocess.call(["sh", "-c", "/home/pi/rpids/scripts/sshow.sh"], shell=True)
-# 			print("rpids: sshow exiting...")
-# 			os.kill(0, signal.SIGTERM)
-# 	else:
-# 		# os.kill(sshow_pid, signal.SIGTERM)
-# 		# sshow()
-# 		pass
-# 	pass
 def sshow():
-	subprocess.call(["sh", "-c", "/home/pi/rpids/scripts/sshow.sh"], shell=True)
-	print("rpids: sshow exiting...")
+	# global sshow_pid
+	# if sshow_pid == 0:
+	# 	sshow_pid = os.fork()
+ #        if sshow_pid == 0:
+	# 		# subprocess.call(["sh", "-c", "/home/pi/rpids/scripts/sshow.sh"], shell=True)
+	# 		print("rpids: sshow exiting...")
+	# 		sys.exit(1)
+	# else:
+	# 	# os.kill(sshow_pid, signal.SIGTERM)
+	# 	# sshow()
+	# 	pass
+
+	os.system("sh /home/pi/rpids/scripts/sshow.sh")
+	print("rpids: sshow started; continuing...")
 	pass
 
 # begins a reboot of the system

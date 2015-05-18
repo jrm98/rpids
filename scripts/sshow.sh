@@ -22,7 +22,7 @@
 # parameter 1 represents the interval between slides; default 10 sec.
 if [ -z "$1" ] 
 	then
-	fbi -a -noverbose -t 10 loop/* &
+	sudo fbi -T 2 -a -nocomments -noverbose -t 10 loop/*
 else
-	fbi -a -noverbose -t $1 loop/* &
+	sudo fbi -T 2 -a -nocomments -noverbose -t $1 loop/*
 fi

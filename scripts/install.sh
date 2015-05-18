@@ -20,19 +20,15 @@
 #-------------------------------------------------------------------------------
 
 # installs dependecies
-apt-get install fbi
-apt-get install ftp
-apt-get install omxplayer
-apt-get install python3
-apt-get install python-pip
+apt-get --assume-yes install fbi ftp screen omxplayer python3 python-pip
 
 # installs python dependecies
-pip install flask
+sudo pip install Flask
 
 
 # ensures dependecies are up to date
-apt-get update
-apt-get upgrade
+apt-get --assume-yes update
+apt-get --assume-yes upgrade
 
-cd "/home/pi/rpids"
-./rpids_update.sh
+# cd "/home/pi/rpids"
+# ./rpids_update.sh

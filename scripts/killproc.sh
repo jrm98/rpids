@@ -19,4 +19,5 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------------
 
-python /home/pi/rpids/rpids.py
+sudo killall fbi
+sudo killall omxplayer
